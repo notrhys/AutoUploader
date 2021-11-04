@@ -1,35 +1,37 @@
-package me.rhys.uploader.app;
+package me.rhys.uploader.watcher;
 
 import lombok.Getter;
-import me.rhys.uploader.app.protocol.SFTPProtocol;
+import me.rhys.uploader.app.App;
 import me.rhys.uploader.util.Logger;
 
+import java.awt.*;
 import java.io.File;
 import java.nio.file.*;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
-public class Uploader {
+public class FileWatcher {
 
-    private final File OUTPUT_FOLDER = new File("output/");
-    private final SFTPProtocol PROTOCOL = new SFTPProtocol();
+    private final File OUTPUT = new File("output/");
+    private final UploaderService SERVICE = new UploaderService();
 
     private long lastUpload;
 
-    public Uploader() {
-        this.OUTPUT_FOLDER.mkdirs();
-        this.start();
-    }
+    public void start(String serverDirectory) {
+        Logger.log("Starting...");
 
-    void start() {
-        Logger.log("Waiting for files...");
+        this.OUTPUT.mkdirs();
 
         try {
             WatchService watchService = FileSystems.getDefault().newWatchService();
-            Path path = this.OUTPUT_FOLDER.toPath();
+            Path path = this.OUTPUT.toPath();
             WatchKey watchKey = path.register(watchService,
                     StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
 
-            //noinspection InfiniteLoopStatement
+            Logger.log("Started file watcher!");
+
+            App.getInstance().getGui().getStatusLabel().setForeground(Color.GREEN);
+            App.getInstance().getGui().getStatusLabel().setText("Status: Running!");
+
             while (true) {
                 WatchKey key = watchService.take();
 
@@ -41,11 +43,11 @@ public class Uploader {
                         this.lastUpload = now;
 
 
-                        File contextFile = new File(this.OUTPUT_FOLDER.getAbsolutePath() + "/" +
+                        File contextFile = new File(this.OUTPUT.getAbsolutePath() + "/" +
                                 watchEvent.context().toString());
 
                         Logger.log("Detected a file change in "
-                                + this.OUTPUT_FOLDER.getAbsolutePath() + " "
+                                + this.OUTPUT.getAbsolutePath() + " "
                                 + contextFile.getAbsolutePath() + " "
                                 + watchEvent.kind().name());
 
@@ -53,7 +55,7 @@ public class Uploader {
                             Logger.log("File change is valid, uploading..." +
                                     " (" + contextFile.getAbsolutePath() + ")");
 
-                            new Thread(() -> this.PROTOCOL.start(contextFile)).start();
+                            new Thread(() -> this.SERVICE.start(contextFile, serverDirectory)).start();
                         } else {
                             Logger.log("File change was not valid, ignoring!" +
                                     " (" + contextFile.getAbsolutePath() + ")");
