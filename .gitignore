@@ -6,3 +6,5 @@
 !pom.xml*
 *.class
 *.class
+
+target/

@@ -10,22 +10,17 @@ import java.nio.file.*;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class Uploader {
 
-    @Getter
-    private static Uploader instance;
-
     private final File OUTPUT_FOLDER = new File("output/");
     private final SFTPProtocol PROTOCOL = new SFTPProtocol();
 
     private long lastUpload;
 
     public Uploader() {
-        instance = this;
         this.OUTPUT_FOLDER.mkdirs();
         this.start();
     }
 
     void start() {
-
         Logger.log("Waiting for files...");
 
         try {
