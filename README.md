@@ -9,3 +9,4 @@ you will need to follow a few steps to get this working outside of the IDE
 5. click start
 6. export the plugin you are uploading to the "output" folder
 
+![image](https://user-images.githubusercontent.com/40679762/140419489-074ff979-8cac-4029-8d6f-5b6796d048e2.png)
