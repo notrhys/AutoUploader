@@ -22,7 +22,6 @@ public class App {
 
     public App() {
         instance = this;
-
         this.configManager.load();
         this.gui.openGUI();
     }
