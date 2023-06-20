@@ -22,7 +22,6 @@ public class UploaderService {
                     App.getInstance().getConfigValues().getFtpPort()
             );
 
-            Logger.log("Authenticating...");
             sshClient.authPassword(
                     App.getInstance().getConfigValues().getFtpUsername(),
                     App.getInstance().getConfigValues().getFtpPassword()
@@ -35,8 +34,6 @@ public class UploaderService {
             Logger.log("Uploading " + file.getAbsolutePath() + "...");
 
             sftpClient.put(file.getAbsolutePath(), serverDirectory + "/" + file.getName());
-
-            Logger.log("Disconnecting...");
 
             sftpClient.close();
             sshClient.disconnect();
